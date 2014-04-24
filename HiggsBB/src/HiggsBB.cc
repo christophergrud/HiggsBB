@@ -95,7 +95,7 @@ TH2D* llVertPosRZ;
 TH2D* llEtaVsEta;
 
 int eventcount = 0;
-
+int higgscounter = 0;
 
 HiggsBB::HiggsBB(const edm::ParameterSet& iConfig)
 
@@ -133,14 +133,15 @@ HiggsBB::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	z[0][0]=0;
 	z[1][0]=0;
 	int counter = 0;
-
 	for (reco::GenParticleCollection::const_iterator iParticle = particles->begin();      iParticle != particles->end(); ++iParticle){
-
+		if (iParticle->status()!=3) continue;
 		counter ++;
 		int testParent;
 		if (iParticle->numberOfMothers()==0)  testParent = 0;
 		else  testParent = iParticle->mother()->pdgId(); 
 		myfile << counter << "         "<< testParent << "          "<< testParent << "          "  << iParticle->pdgId() << "              " << iParticle->px() << "              "  << iParticle->py() << "              " << iParticle->pz() << "              " << iParticle->mass() << "\n";	
+		
+		if (iParticle->pdgId()==25) higgscounter++;
 
 		//Fills Histograms for Higgs	
 		if (iParticle->pdgId()==35){
@@ -196,6 +197,7 @@ HiggsBB::beginJob()
 	void 
 HiggsBB::endJob() 
 {
+std::cout<<higgscounter<<std::endl;
 }
 
 // ------------ method called when starting to processes a run  ------------

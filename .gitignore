@@ -3,4 +3,4 @@
 *.pyc
 *.txt
 TestAnalyzer/
-
+HiggsBB/*.root
