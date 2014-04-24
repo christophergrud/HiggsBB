@@ -5,11 +5,11 @@
 // 
 /**\class HiggsBB HiggsBB.cc test/HiggsBB/src/HiggsBB.cc
 
- Description: [one line class summary]
+Description: [one line class summary]
 
- Implementation:
-     [Notes on implementation]
-*/
+Implementation:
+[Notes on implementation]
+ */
 //
 // Original Author:  Christoperh Grud
 //         Created:  Thu Apr 17 15:42:32 EDT 2014
@@ -49,6 +49,7 @@
 #include <iostream>
 #include <cmath>
 #include "TH1D.h"
+#include "TH2D.h"
 #include <fstream>
 #include "TLorentzVector.h"
 #include "TVector3.h"
@@ -58,24 +59,24 @@
 //
 
 class HiggsBB : public edm::EDAnalyzer {
-   public:
-      explicit HiggsBB(const edm::ParameterSet&);
-      ~HiggsBB();
+	public:
+		explicit HiggsBB(const edm::ParameterSet&);
+		~HiggsBB();
 
-      static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+		static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 
-   private:
-      virtual void beginJob() ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
+	private:
+		virtual void beginJob() ;
+		virtual void analyze(const edm::Event&, const edm::EventSetup&);
+		virtual void endJob() ;
 
-      virtual void beginRun(edm::Run const&, edm::EventSetup const&);
-      virtual void endRun(edm::Run const&, edm::EventSetup const&);
-      virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-      virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+		virtual void beginRun(edm::Run const&, edm::EventSetup const&);
+		virtual void endRun(edm::Run const&, edm::EventSetup const&);
+		virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+		virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
 
-      // ----------member data ---------------------------
+		// ----------member data ---------------------------
 };
 
 edm::Service<TFileService> fs;
@@ -83,33 +84,34 @@ edm::Handle< reco::GenParticleCollection > particles;
 edm::InputTag particles_;
 ofstream myfile;
 
-TH1D* howManyB;
-TH1D* howManyMu;
-TH1D* howManyE;
-TH1D* pdgParts;
-TH1D* bPt;
-TH1D* bParent;
-TH1D* howManyLL;
+TH1D* higgsPt;
+TH1D* higgsEta;
+TH1D* higgsPhi;
+TH1D* llPt;
+TH1D* llEta;
+TH1D* llPhi;
+TH2D* llVertPosRPhi;
+TH2D* llVertPosRZ;
+TH2D* llEtaVsEta;
 
-
+int eventcount = 0;
 
 
 HiggsBB::HiggsBB(const edm::ParameterSet& iConfig)
 
 {
-   //now do what ever initialization is needed
+	//now do what ever initialization is needed
 	particles_ = iConfig.getParameter<edm::InputTag>("particles");
-	myfile.open("output.txt");
-
+	myfile.open("output.txt");	
 }
 
 
 HiggsBB::~HiggsBB()
 {
- 
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
-  myfile.close();
+
+	// do anything here that needs to be done at desctruction time
+	// (e.g. close files, deallocate resources etc.)
+	myfile.close();
 }
 
 
@@ -118,113 +120,105 @@ HiggsBB::~HiggsBB()
 //
 
 // ------------ method called for each event  ------------
-void
+	void
 HiggsBB::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
-   using namespace reco;
-   using namespace std;
-   iEvent.getByLabel(particles_,particles);
-   int countB = 0;
-   int countMu = 0;
-   int countE = 0;
-   int countLL = 0;
-//   edm::Handle<std::vector<reco::GenParticle>> particles;
-//   const std::vector<reco::GenParticle> & p = *particles;  
-   // fstream myfile;
-   //myfile.open ("/users/h2/grud/CMSSW_5_3_9/src/test/HiggsBB/output.txt"); 
-  myfile << "************************NEW EVENT*****************************\n\n**************************************************************\n";
-//   vector< TLorentzVector > p4;
-//   TLorentzVector tempP4;
+	using namespace edm;
+	using namespace reco;
+	using namespace std;
+	iEvent.getByLabel(particles_,particles);
+	eventcount++;
+	myfile << "************************EVENT "<< eventcount <<" *********************************\n\n******************************************************************\n";
+	double z[2][2];
+	z[0][0]=0;
+	z[1][0]=0;
+	int counter = 0;
 
-/*   for (unsigned int i=0; i<particles->size(); ++i){
-	tempP4.SetPxPyPzE(p[i].px(),p[i].py(),p[i].pz(),p[i].energy());
-	p4.push_back( tempP4 );
-//	myfile << p[i].pdgId() << "      " << p[i].mother() << "     " << p4[i].Pt() << endl;	
-   }
-*/
-int counter = 0;
-for (reco::GenParticleCollection::const_iterator iParticle = particles->begin();      iParticle != particles->end(); ++iParticle){
-/*	if (iParticle->status()!=3) continue;
-	if (iParticle->pdgId()==21 || iParticle->pdgId()==22) continue; 
-	pdgParts->Fill(iParticle->pdgId());
-	if (iParticle->pdgId()==5 || iParticle->pdgId()==-5){
-		countB++;
-		bPt->Fill(iParticle->pt());
-		std::cout << iParticle->mother()->pdgId() << std::endl;
-		bParent->Fill(iParticle->mother()->pdgId());
+	for (reco::GenParticleCollection::const_iterator iParticle = particles->begin();      iParticle != particles->end(); ++iParticle){
+
+		counter ++;
+		int testParent;
+		if (iParticle->numberOfMothers()==0)  testParent = 0;
+		else  testParent = iParticle->mother()->pdgId(); 
+		myfile << counter << "         "<< testParent << "          "<< testParent << "          "  << iParticle->pdgId() << "              " << iParticle->px() << "              "  << iParticle->py() << "              " << iParticle->pz() << "              " << iParticle->mass() << "\n";	
+
+		//Fills Histograms for Higgs	
+		if (iParticle->pdgId()==35){
+			higgsPt->Fill(iParticle->pt());
+			higgsEta->Fill(iParticle->eta());
+			higgsPhi->Fill(iParticle->phi());
+		}	
+
+		//Fills Histograms for all LL
+		if (iParticle->pdgId()==6001112){
+
+			double llr = sqrt(iParticle->vx()*iParticle->vx() + iParticle->vy()*iParticle->vy());
+
+			llPt->Fill(iParticle->pt());
+			llEta->Fill(iParticle->eta());
+			llPhi->Fill(iParticle->phi());
+			llVertPosRPhi->Fill(llr, iParticle->phi());
+			llVertPosRZ->Fill(llr, iParticle->vz());
+
+			//Tests For Leading and Sub Leading LL
+			if (iParticle->pt() > z[0][0]){	
+				z[0][0]=iParticle->pt();
+				z[0][1]=iParticle->eta();
+			} 
+			else if (iParticle->pt() > z[1][0]) {
+				z[1][0]=iParticle->pt();
+				z[1][1]=iParticle->eta();			
+			}
+		}	
 	}
-	if (iParticle->pdgId()==13 || iParticle->pdgId()==-13){
-		countMu++;
-	}
-	if (iParticle->pdgId()==11 || iParticle->pdgId()==-11){
-		countE++;
-	}
-	if (iParticle->pdgId()==6001112){
-		countLL++;
-	}*/
-	counter ++;
-	myfile << counter << "               "<< iParticle->mother() << "                " << iParticle->pdgId() << "               " << iParticle->px() << "               "  << iParticle->py() << "               " << iParticle->pz() << "               " << iParticle->mass() << "\n";	
-
-     //   ofstream myfile;
-	//	myfile.open ("/users/h2/grud/CMSSW_5_3_9/src/test/HiggsBB/output.txt");
-	//	myfile << "************************NEW EVENT*****************************\n\n**************************************************************\n"
-			
-}
-
-if (countB != 0) howManyB->Fill(countB);
-if (countMu != 0) howManyMu->Fill(countMu);
-if (countE != 0) howManyE->Fill(countE);
-if (countLL != 0) howManyLL->Fill(countLL);
-
-//bbBarDR = reco::deltaR(bEta, bPhi, bBarEta, bBarPhi);
-//bbBarDRVsHiggsPt->Fill(iParticle->pt(),bbBarDR);
-  
-//myfile.close();   
-   
+	//Fills Histogram For Leading LL
+	if (z[0][0]!=0) llEtaVsEta->Fill(z[0][1],z[1][1]);
 }
 
 // ------------ method called once each job just before starting event loop  ------------
-void 
+	void 
 HiggsBB::beginJob()
 {
 
-howManyB = fs->make<TH1D>("howManyB","howManyB",20,0,20);
-howManyMu = fs->make<TH1D>("howManyMu","howManyMu",10,0,10);
-howManyE = fs->make<TH1D>("howManyE","howManyE",10,0,10);
-pdgParts = fs->make<TH1D>("pdgParts","pdgParts",10000,0,10000);
-bPt = fs->make<TH1D>("bPt","bPt",230,0,230);
-bParent = fs->make<TH1D>("bParent","bParent",60,-10,50);
-howManyLL = fs->make<TH1D>("howManyLL","howManyLL",20,0,20);
+	higgsPt = fs->make<TH1D>("higgsPt","higgsPt",100,0,200);
+	higgsEta = fs->make<TH1D>("higgsEta","higgsEta",100,0,8
+			);
+	higgsPhi = fs->make<TH1D>("higgsPhi","higgsPhi",100,0,3.2);
 
+	llPt = fs->make<TH1D>("llPt","llPt",100,0,200);
+	llEta = fs->make<TH1D>("llEta","llEta",100,0,10);
+	llPhi = fs->make<TH1D>("llPhi","llPhi",100,0,5);
+	llVertPosRPhi = fs->make<TH2D>("llVertPosRPhi","llVertPosRPhi",100,0,10, 100, 0, 10);
+	llVertPosRZ = fs->make<TH2D>("llVertPosRZ","llVertPosRZ",100,0,10, 100, 0, 10);
+	llEtaVsEta = fs->make<TH2D>("llEtaVsEta","llEtaVsEta",100,0,7, 100, 0, 7);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void 
+	void 
 HiggsBB::endJob() 
 {
 }
 
 // ------------ method called when starting to processes a run  ------------
-void 
+	void 
 HiggsBB::beginRun(edm::Run const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
-void 
+	void 
 HiggsBB::endRun(edm::Run const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
-void 
+	void 
 HiggsBB::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
-void 
+	void 
 HiggsBB::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
 }
@@ -232,11 +226,11 @@ HiggsBB::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
 HiggsBB::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
-  //The following says we do not know what parameters are allowed so do no validation
-  // Please change this to state exactly what you do use, even if it is no parameters
-  edm::ParameterSetDescription desc;
-  desc.setUnknown();
-  descriptions.addDefault(desc);
+	//The following says we do not know what parameters are allowed so do no validation
+	// Please change this to state exactly what you do use, even if it is no parameters
+	edm::ParameterSetDescription desc;
+	desc.setUnknown();
+	descriptions.addDefault(desc);
 }
 
 //define this as a plug-in

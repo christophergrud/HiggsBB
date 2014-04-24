@@ -76,7 +76,7 @@ process.generator = cms.EDFilter("Pythia6GeneratorFilter",
             'MWID(35)=2 ! Let me set H0 propertiesPMAS(35,1)=125.0 ! This probably has no effect ...', 
             'PMAS(35,2)=1.'),
         parameterSets = cms.vstring('pythiaHZZmumumumu'),
-        PYUPDAParameters = cms.vstring('PYUPDAFILE =  Configuration/Generator/data/higgs_pythia6.pyupda',
+        PYUPDAParameters = cms.vstring('PYUPDAFILE =  higgs_pythia6.pyupda',
 	'PYUPDApostPYINIT'
 	)
     )
