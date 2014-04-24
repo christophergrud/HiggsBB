@@ -181,16 +181,15 @@ HiggsBB::beginJob()
 {
 
 	higgsPt = fs->make<TH1D>("higgsPt","higgsPt",100,0,200);
-	higgsEta = fs->make<TH1D>("higgsEta","higgsEta",100,0,8
-			);
-	higgsPhi = fs->make<TH1D>("higgsPhi","higgsPhi",100,0,3.2);
+	higgsEta = fs->make<TH1D>("higgsEta","higgsEta",100,-7,7);
+	higgsPhi = fs->make<TH1D>("higgsPhi","higgsPhi",100,-3.2,3.2);
 
 	llPt = fs->make<TH1D>("llPt","llPt",100,0,200);
-	llEta = fs->make<TH1D>("llEta","llEta",100,0,10);
-	llPhi = fs->make<TH1D>("llPhi","llPhi",100,0,5);
-	llVertPosRPhi = fs->make<TH2D>("llVertPosRPhi","llVertPosRPhi",100,0,10, 100, 0, 10);
-	llVertPosRZ = fs->make<TH2D>("llVertPosRZ","llVertPosRZ",100,0,10, 100, 0, 10);
-	llEtaVsEta = fs->make<TH2D>("llEtaVsEta","llEtaVsEta",100,0,7, 100, 0, 7);
+	llEta = fs->make<TH1D>("llEta","llEta",100,-7,7);
+	llPhi = fs->make<TH1D>("llPhi","llPhi",100,-3.2,3.2);
+	llVertPosRPhi = fs->make<TH2D>("llVertPosRPhi","llVertPosRPhi",100,0,1, 100, 0, 2);
+	llVertPosRZ = fs->make<TH2D>("llVertPosRZ","llVertPosRZ",100,0,1, 100, 0, 20);
+	llEtaVsEta = fs->make<TH2D>("llEtaVsEta","llEtaVsEta",100,-7,7, 100, -7, 7);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
