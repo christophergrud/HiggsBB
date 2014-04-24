@@ -9,7 +9,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
-        'file:/users/h2/grud/CMSSW_5_3_9/src/test/TestHiggs_py_GEN.root'
+        'file:/users/h2/grud/CMSSW_5_3_9/src/test/TestHiggs_py_GEN2.root'
 	#'file:/cms/skaplan/PLT/sim/CMSSW_5_3_9/src/SingleMuonPt100_PLTEta_NoSmear.root'
     )
 )

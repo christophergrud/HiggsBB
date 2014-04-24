@@ -45,7 +45,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = process.RAWSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('TestHiggs_py_GEN.root'),
+    fileName = cms.untracked.string('TestHiggs_py_GEN2.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM-RAW')
@@ -75,10 +75,15 @@ process.generator = cms.EDFilter("Pythia6GeneratorFilter",
             'MSUB(152)=1', 
             'MWID(35)=2 ! Let me set H0 propertiesPMAS(35,1)=125.0 ! This probably has no effect ...', 
             'PMAS(35,2)=1.'),
-        parameterSets = cms.vstring('pythiaHZZmumumumu'),
-        PYUPDAParameters = cms.vstring('PYUPDAFILE =  higgs_pythia6.pyupda',
-	'PYUPDApostPYINIT'
-	)
+# 	PYUPDAParameters = cms.vstring(
+#            'PYUPDAFILE = pyupda.out',
+#            'PYUPDAWRITE'
+#        )       
+	PYUPDAParameters = cms.vstring('PYUPDAFILE = Configuration/Generator/data/higgs_pythia6.pyupda',
+	  #  "PYUPDApostPYINIT"
+	),
+	parameterSets = cms.vstring('pythiaHZZmumumumu','PYUPDAParameters')
+
     )
 )
 
